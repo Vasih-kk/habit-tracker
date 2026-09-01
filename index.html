@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>September 2026 Habit Tracker</title>
+<style>
+  * { box-sizing: border-box; }
+  
+  body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #1a1a1a;
+    min-height: 100vh;
+    padding: 20px 0;
+  }
+  
+  .wrap {
+    max-width: 1200px;
+    margin: auto;
+    padding: 20px;
+  }
+  
+  header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 20px;
+    padding: 40px;
+    margin-bottom: 30px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    animation: slideDown 0.6s ease-out;
+  }
+  
+  @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  h1 {
+    margin: 0 0 10px;
+    font-size: 42px;
+    font-weight: 700;
+  }
+  
+  .emoji { font-size: 50px; margin-right: 10px; }
+  
+  .sub {
+    font-size: 16px;
+    opacity: 0.95;
+    margin-bottom: 20px;
+    font-weight: 500;
+  }
+  
+  .topbar {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    margin-top: 20px;
+  }
+  
+  button {
+    border: 0;
+    border-radius: 12px;
+    padding: 12px 24px;
+    font-weight: 700;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  
+  #resetBtn {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: 2px solid white;
+  }
+  
+  #resetBtn:hover {
+    background: white;
+    color: #667eea;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  }
+  
+  #saveStatus {
+    font-size: 14px;
+    opacity: 0.95;
+    font-weight: 600;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 8px 16px;
+    border-radius: 20px;
+  }
+  
+  .progressBox {
+    background: white;
+    border-radius: 20px;
+    padding: 30px;
+    margin-bottom: 30px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+    animation: fadeIn 0.6s ease-out 0.2s both;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+  #progressText {
+    display: block;
+    font-size: 24px;
+    font-weight: 700;
+    color: #667eea;
+    margin-bottom: 15px;
+  }
+  
+  .progressLine {
+    height: 16px;
+    background: #e8eef5;
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+  }
+  
+  .progressFill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    transition: width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(102, 126, 234, 0.5);
+  }
+  
+  .motivationMessage {
+    margin-top: 20px;
+    padding: 15px 20px;
+    background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+    border-left: 4px solid #667eea;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #555;
+    font-weight: 500;
+  }
+  
+  .tableWrap {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+    overflow: auto;
+    animation: fadeIn 0.6s ease-out 0.4s both;
+  }
+  
+  table {
+    border-collapse: separate;
+    border-spacing: 0;
+    width: 100%;
+    min-width: 800px;
+  }
+  
+  th, td {
+    padding: 16px 12px;
+    border-bottom: 1px solid #e8eef5;
+    text-align: center;
+  }
+  
+  th {
+    position: sticky;
+    top: 0;
+    background: linear-gradient(135deg, #f0f4ff 0%, #f5f0ff 100%);
+    z-index: 2;
+    font-size: 13px;
+    font-weight: 700;
+    color: #667eea;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  
+  th:first-child, td:first-child {
+    position: sticky;
+    left: 0;
+    background: white;
+    z-index: 3;
+    text-align: left;
+    padding-left: 20px;
+  }
+  
+  th:first-child {
+    z-index: 4;
+    background: linear-gradient(135deg, #f0f4ff 0%, #f5f0ff 100%);
+  }
+  
+  tr.today td {
+    background: linear-gradient(135deg, #fff9e6 0%, #fffaf0 100%);
+  }
+  
+  tr.today td:first-child {
+    background: linear-gradient(135deg, #fff9e6 0%, #fffaf0 100%);
+    box-shadow: inset -3px 0 0 #ffc107;
+  }
+  
+  tr.today th:first-child {
+    box-shadow: inset -3px 0 0 #ffc107;
+  }
+  
+  .date {
+    font-weight: 700;
+    white-space: nowrap;
+    color: #667eea;
+    font-size: 15px;
+  }
+  
+  .day {
+    font-size: 12px;
+    color: #999;
+    font-weight: 400;
+    margin-top: 2px;
+  }
+  
+  input[type="checkbox"] {
+    width: 28px;
+    height: 28px;
+    cursor: pointer;
+    accent-color: #667eea;
+    transition: all 0.3s ease;
+  }
+  
+  input[type="checkbox"]:hover {
+    transform: scale(1.15);
+  }
+  
+  input[type="checkbox"]:checked {
+    animation: checkPulse 0.4s ease;
+  }
+  
+  @keyframes checkPulse {
+    0% { transform: scale(1.2); }
+    50% { transform: scale(0.95); }
+    100% { transform: scale(1); }
+  }
+  
+  .done {
+    background: linear-gradient(135deg, #e8f5e9 0%, #f1f8e9 100%) !important;
+  }
+  
+  .done input[type="checkbox"] {
+    accent-color: #4caf50;
+  }
+  
+  .footer {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.8);
+    text-align: center;
+    padding: 30px;
+    margin-top: 30px;
+  }
+  
+  .celebration {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 60px;
+    opacity: 0;
+    animation: celebrateFloat 1s ease-out;
+    pointer-events: none;
+    z-index: 1000;
+  }
+  
+  @keyframes celebrateFloat {
+    0% { opacity: 1; transform: translate(-50%, -50%) scale(0.5); }
+    100% { opacity: 0; transform: translate(-50%, -150%) scale(1); }
+  }
+  
+  .streak-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a3f 100%);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    margin-left: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  
+  @media (max-width: 768px) {
+    .wrap { padding: 15px; }
+    header { padding: 25px; }
+    h1 { font-size: 28px; }
+    .emoji { font-size: 35px; }
+    th, td { padding: 12px 8px; }
+    th:first-child, td:first-child { padding-left: 12px; }
+    input[type="checkbox"] { width: 24px; height: 24px; }
+    .progressBox { padding: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <div>
+      <span class="emoji">🎯</span>
+      <h1>September 2026<br>Habit Tracker</h1>
+    </div>
+    <div class="sub">Master Your Daily Habits • Build Your Best Self</div>
+    <div class="sub" style="font-size: 14px; opacity: 0.8;">Thahajjud • Job • CCNA • Quran • Exercise • No Sugar</div>
+    <div class="topbar">
+      <button id="resetBtn">🔄 Reset Month</button>
+      <span id="saveStatus">⏳ Loading...</span>
+    </div>
+  </header>
+
+  <div class="progressBox">
+    <strong id="progressText">0% Completed</strong>
+    <div class="progressLine">
+      <div class="progressFill" id="progressFill"></div>
+    </div>
+    <div class="motivationMessage" id="motivationMsg">
+      🌟 Start your journey today!
+    </div>
+  </div>
+
+  <div class="tableWrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Day / Date</th>
+          <th>🌙 Thahajjud</th>
+          <th>💼 Job</th>
+          <th>🖥️ CCNA</th>
+          <th>📖 Quran</th>
+          <th>💪 Exercise</th>
+          <th>🍬 No Sugar</th>
+        </tr>
+      </thead>
+      <tbody id="checklist"></tbody>
+    </table>
+  </div>
+
+  <div class="footer">
+    ✨ Your progress syncs automatically across all devices using Firebase ✨
+  </div>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
+  import {
+    getAuth, signInAnonymously, onAuthStateChanged
+  } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
+  import {
+    getFirestore, doc, getDoc, setDoc, onSnapshot
+  } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
+
+  // ====== PASTE YOUR FIREBASE CONFIG HERE (STEP 3 IN INSTRUCTIONS) ======
+  const firebaseConfig = {
+    apiKey: "PASTE_API_KEY",
+    authDomain: "PASTE_PROJECT_ID.firebaseapp.com",
+    projectId: "PASTE_PROJECT_ID",
+    storageBucket: "PASTE_STORAGE_BUCKET",
+    messagingSenderId: "PASTE_MESSAGING_SENDER_ID",
+    appId: "PASTE_APP_ID"
+  };
+  // =========================================================================
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  const habits = ["thahajjud", "job", "ccna", "quran", "exercise", "nosugar"];
+  const labels = ["Thahajjud", "Job", "CCNA Learning", "Quran", "Exercise", "No Sugar"];
+  const emojis = ["🌙", "💼", "🖥️", "📖", "💪", "🍬"];
+  const year = 2026, month = 8; // September (0-based)
+  
+  const tbody = document.getElementById("checklist");
+  const statusEl = document.getElementById("saveStatus");
+  const motivationEl = document.getElementById("motivationMsg");
+
+  let currentUser = null;
+  let unsubscribe = null;
+  let saveTimer = null;
+
+  const motivations = [
+    "🌟 Keep going! You're building great habits!",
+    "💪 Every check is a step towards your goals!",
+    "🚀 Consistency is key! Keep it up!",
+    "✨ You're doing amazing! Stay focused!",
+    "🎯 One day at a time! You've got this!",
+    "🔥 Your future self will thank you!",
+    "💎 Progress over perfection!",
+    "🌈 Every habit completed brings you closer to success!",
+  ];
+
+  function getMotivation(progress) {
+    if (progress < 20) return motivations[0];
+    if (progress < 40) return motivations[1];
+    if (progress < 60) return motivations[2];
+    if (progress < 80) return motivations[3];
+    if (progress < 100) return motivations[4];
+    return "🏆 Perfect day! You are unstoppable!";
+  }
+
+  function dateKey(day) {
+    return `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+  }
+
+  function celebrate() {
+    const celebration = document.createElement("div");
+    celebration.className = "celebration";
+    celebration.textContent = ["🎉", "⭐", "🔥", "💯"][Math.floor(Math.random() * 4)];
+    document.body.appendChild(celebration);
+    setTimeout(() => celebration.remove(), 1000);
+  }
+
+  function render() {
+    tbody.innerHTML = "";
+    const days = new Date(year, month + 1, 0).getDate();
+    const todayKey = new Date().toISOString().slice(0, 10);
+
+    for (let d = 1; d <= days; d++) {
+      const key = dateKey(d);
+      const date = new Date(year, month, d);
+      const tr = document.createElement("tr");
+      if (key === todayKey) tr.classList.add("today");
+
+      const first = document.createElement("td");
+      first.innerHTML = `<div class="date">${date.toLocaleDateString("en-US", { weekday: "short" })}</div>
+                         <div class="day">${date.toLocaleDateString("en-US", { month: "short", day: "numeric" })}</div>`;
+      tr.appendChild(first);
+
+      habits.forEach((habit, i) => {
+        const td = document.createElement("td");
+        const cb = document.createElement("input");
+        cb.type = "checkbox";
+        cb.dataset.date = key;
+        cb.dataset.habit = habit;
+        cb.setAttribute("aria-label", `${key} ${labels[i]}`);
+        cb.addEventListener("change", () => {
+          td.classList.toggle("done", cb.checked);
+          if (cb.checked) celebrate();
+          scheduleSave();
+          updateProgress();
+        });
+        td.appendChild(cb);
+        tr.appendChild(td);
+      });
+      tbody.appendChild(tr);
+    }
+  }
+
+  function getState() {
+    const state = {};
+    document.querySelectorAll("input[type=checkbox]").forEach(cb => {
+      if (cb.checked) {
+        if (!state[cb.dataset.date]) state[cb.dataset.date] = {};
+        state[cb.dataset.date][cb.dataset.habit] = true;
+      }
+    });
+    return state;
+  }
+
+  function applyState(state) {
+    document.querySelectorAll("input[type=checkbox]").forEach(cb => {
+      const checked = !!state?.[cb.dataset.date]?.[cb.dataset.habit];
+      cb.checked = checked;
+      cb.parentElement.classList.toggle("done", checked);
+    });
+    updateProgress();
+  }
+
+  function updateProgress() {
+    const boxes = [...document.querySelectorAll("input[type=checkbox]")];
+    const done = boxes.filter(x => x.checked).length;
+    const pct = boxes.length ? Math.round((done / boxes.length) * 100) : 0;
+    
+    document.getElementById("progressText").textContent = `${pct}% Completed (${done}/${boxes.length})`;
+    document.getElementById("progressFill").style.width = pct + "%";
+    motivationEl.textContent = getMotivation(pct);
+  }
+
+  function scheduleSave() {
+    statusEl.textContent = "💾 Saving...";
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(saveOnline, 500);
+  }
+
+  async function saveOnline() {
+    if (!currentUser) {
+      statusEl.textContent = "⏳ Waiting for Firebase...";
+      return;
+    }
+    try {
+      await setDoc(
+        doc(db, "users", currentUser.uid, "months", "2026-09"),
+        { checklist: getState(), updatedAt: new Date().toISOString() },
+        { merge: true }
+      );
+      statusEl.textContent = "✅ Saved to Firebase";
+    } catch (err) {
+      console.error(err);
+      statusEl.textContent = "⚠️ Save failed — check Firebase config";
+    }
+  }
+
+  async function loadOnline(user) {
+    try {
+      const ref = doc(db, "users", user.uid, "months", "2026-09");
+      const snap = await getDoc(ref);
+      if (snap.exists()) applyState(snap.data().checklist || {});
+      statusEl.textContent = "✅ Firebase Connected";
+    } catch (err) {
+      console.error(err);
+      statusEl.textContent = "⚠️ Firebase connection error";
+    }
+  }
+
+  document.getElementById("resetBtn").addEventListener("click", async () => {
+    if (!confirm("🔄 Reset all September 2026 checkmarks? This cannot be undone!")) return;
+    document.querySelectorAll("input[type=checkbox]").forEach(cb => {
+      cb.checked = false;
+      cb.parentElement.classList.remove("done");
+    });
+    updateProgress();
+    await saveOnline();
+  });
+
+  render();
+  updateProgress();
+
+  signInAnonymously(auth).catch(err => {
+    console.error(err);
+    statusEl.textContent = "⚠️ Enable Anonymous Auth in Firebase";
+  });
+
+  onAuthStateChanged(auth, async user => {
+    currentUser = user;
+    if (user) {
+      await loadOnline(user);
+      if (unsubscribe) unsubscribe();
+      unsubscribe = onSnapshot(doc(db, "users", user.uid, "months", "2026-09"), snap => {
+        if (snap.exists()) applyState(snap.data().checklist || {});
+      });
+    }
+  });
+</script>
+
+</body>
+</html>
