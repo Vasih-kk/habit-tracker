@@ -358,14 +358,23 @@
   } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
 
   // ====== PASTE YOUR FIREBASE CONFIG HERE (STEP 3 IN INSTRUCTIONS) ======
-  const firebaseConfig = {
-    apiKey: "PASTE_API_KEY",
-    authDomain: "PASTE_PROJECT_ID.firebaseapp.com",
-    projectId: "PASTE_PROJECT_ID",
-    storageBucket: "PASTE_STORAGE_BUCKET",
-    messagingSenderId: "PASTE_MESSAGING_SENDER_ID",
-    appId: "PASTE_APP_ID"
-  };
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyCGiisMif4RXvi8-fk_rAwwo5hg_t_wqGI",
+  authDomain: "habit-tracker-f84f6.firebaseapp.com",
+  projectId: "habit-tracker-f84f6",
+  storageBucket: "habit-tracker-f84f6.firebasestorage.app",
+  messagingSenderId: "1094536524333",
+  appId: "1:1094536524333:web:273f8ca0866b56523b3ea4"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
   // =========================================================================
 
   const app = initializeApp(firebaseConfig);
